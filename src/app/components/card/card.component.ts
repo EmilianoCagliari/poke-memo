@@ -15,14 +15,14 @@ export class CardComponent implements OnInit {
 
 
   selected(i: number) {
-    console.log('Array Items:', this.items);
+    // console.log('Array Items:', this.items);
     
-    console.log('INDEX:', i);
-    console.log('This.items:', this.items[i]);
+    // console.log('INDEX:', i);
+    // console.log('This.items:', this.items[i]);
     
     
-    this.items[i].isSelected = true;
-    console.log(this.items[i]);    
+    this.items[i].isSelected = !this.items[i].isSelected ;
+    // console.log('Index boolean:', i, this.items[i].isSelected);    
   }
 
   ngOnInit(): void {

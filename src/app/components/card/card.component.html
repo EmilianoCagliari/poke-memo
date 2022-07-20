@@ -1,9 +1,9 @@
 <div *ngFor="let item of items; let i=index"
-class="w-48 h-64 p-2 bg-transparent cursor-pointer group perspective"> 
-     <div class="relative preserve-3d w-full h-full  duration-700"
+class="w-48 h-64 p-2 bg-transparent group perspective"> 
+     <div class="relative preserve-3d w-full h-full  duration-700 cursor-pointer"
      (click)="selected(i)"
      [ngClass]="{
-         'my-rotate-y-180': item.isSelected 
+         'my-rotate-y-180': item.isSelected
      }"> <!-- group-hover:my-rotate-y-180 -->
         <div class="absolute backface-hidden w-full h-full">
             <img src="../../../assets/Back - Card.png" class="w-full h-full" alt="" srcset="">

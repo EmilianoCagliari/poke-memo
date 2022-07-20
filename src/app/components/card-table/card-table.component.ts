@@ -14,135 +14,144 @@ export class CardTableComponent implements OnInit {
 
 
   pokemonList: any = [];
+  numerList: number[] = [];
 
   constructor(private pokeService: PokeapiService) {
-
-    this.obtenerPokeList();
-
+    this.getPokeList();
 
   }
 
-  obtenerPokeList() {
+  getPokeList() {
 
-    let pokeArr:any  = [];
+    const cant = this.generateArrNumber(5);
 
-    for (let i = 0; i < 5; i++) {
-      let desc = "Pokemon sin descripcion";
+    // console.log('=== GetPokeList Arr Number ====');
 
-      const rand = Math.round((Math.random() * 150));
-      console.log("Numero Random:", rand);
-
-      this.pokeService.getPokeCharacteristic(`${rand}`)
-        .subscribe({
-          next(data: PokeCharacteristicResponse) {
-            if (data != null) {
-              data.descriptions.forEach(e => {
-                if (e.language.name == 'es') {
-                  desc = e.description;
-                }
-              });
-            }
-          },
-          error(err) {
-            console.log(err);            
-          },
-          complete() {
-            console.log('getPokeCharacteristic Completado');            
-          },
-        });
+    // console.log(cant);
 
 
-        this.pokeService.getPoke(`${rand}`)
-        .subscribe({
-          next(data: PokemonResponse) {
-            console.log('id:', data.id);
-            const img = data.sprites.other?.['official-artwork'].front_default;
-            
-            let pokeData = {} as Pokelist;
-            console.log('========', data.types[0].type.name, '=======');
-            
-              pokeData.id = data.id.toString();
-              pokeData.name = data.name;
-              pokeData.img = (img === undefined) ? "no image" : data.sprites.other?.['official-artwork'].front_default;
-              pokeData.type = data.types[0].type.name;
-              pokeData.desc = desc;
-              pokeData.isSelected = false;
-            
-            pokeArr.push(pokeData);
-            pokeArr.push(pokeData);
-          },
-          error(err) {
-            console.log(err);
-          },
-          complete() {
-          
-            console.log('getPoke Completado');
-            
-          },
-        }, )
+    for (let i = 0; i < cant.length; i++) {
+      const rand = cant[i];
+    
+      let info = this.getServicePokeInfo(rand);
 
+      this.pokemonList.push(info);
 
-        
-      // this.pokeService.getPoke(`${rand}`)
-      // .subscribe((data: PokemonResponse) => {
-      //   console.log('id:', data.id);
-      //   const img = data.sprites.other?.['official-artwork'].front_default;
-      //   this.pokemonList = {
-      //       id: data.id.toString(),
-      //       name: data.name,
-      //       img: (img === undefined) ? "no image" : data.sprites.other?.['official-artwork'].front_default,
-      //       type: data.types[0].type.name,
-      //       desc: desc
-      //   };
-      //   // console.log('name:', data.name);
-      //   // this.pokemonList.push(data.name);
-      //   // console.log('img Url:', data.sprites.other?.['official-artwork'].front_default);
-      //   // this.pokemonList.push(data.sprites.other?.['official-artwork'].front_default);
-      //   // console.log('type:', data.types[0].type.name);
-      //   // this.pokemonList.push(data.types[0].type.name);
-      // }, (error) => {
-      //   console.log('');
-      // });
-
-     
-
-        // this.pokemonList[i] = pokeObj;
-        
-        // this.pokemonList.push(pokeObj);
-
-
-
+      
     }
 
-    this.pokemonList = pokeArr;
-    
-    console.log('=============', 'ARRAY','=============');
-    
-    console.log(this.pokemonList);
-    this.shuffle(this.pokemonList);
+
+    // console.log('=============', 'ARRAY', '=============');
+
+
+    // console.log(this.pokemonList);
+
+  }
+
+  generateArrNumber(cant: number) {
+    const limit: number = cant;
+    let arrResp: number[] = [];
+
+    for (let i = 0; i < limit; i++) {
+      const rand = Math.round((Math.random() * 150));
+
+      if (!arrResp.includes(rand)) {
+        arrResp.push(rand, rand);
+      } else {
+        console.log('Valor Repetido');
+        i--;
+      }
+
+    }
+    // console.log('Arr Resp: ', arrResp);
+
+    this.shuffle(arrResp);
+
+    return arrResp;
 
   }
 
 
+  private getServicePokeChar(id: number) {
+
+    let resp = "Pokemon sin descripcion";
+
+    this.pokeService.getPokeCharacteristic(`${id}`)
+      .subscribe({
+        next(data: PokeCharacteristicResponse) {
+          if (data != null) {
+            data.descriptions.forEach(e => {
+              if (e.language.name == 'es') {
+                resp = e.description;
+              }
+            });
+          }
+        },
+        error(err) {
+          console.log(err);
+        },
+        complete() {
+          console.log('getPokeCharacteristic Completado');
+        },
+      });
+
+    return resp
+  }
+
+  private getServicePokeInfo(id: number) {
+    
+    let pokeData = {} as Pokelist;
+    // const desc = this.getServicePokeChar(id);
+
+    this.pokeService.getPoke(`${id}`)
+      .subscribe({
+        next(data: PokemonResponse) {
+          // console.log('id:', data.id);
+          const img = data.sprites.other?.['official-artwork'].front_default;
+
+          // console.log('========', data.types[0].type.name, '=======');
+
+          pokeData.id = data.id.toString();
+          pokeData.name = data.name;
+          pokeData.img = (img === undefined) ? "no image" : data.sprites.other?.['official-artwork'].front_default;
+          pokeData.type = data.types[0].type.name;
+          // pokeData.desc = desc;
+          pokeData.isSelected = false;
+        },
+        error(err) {
+          console.log(err);
+        },
+        complete() {
+
+          console.log('getPoke Completado');
+
+        },
+      })
+
+      return pokeData;
+
+  }
 
 
-  shuffle<T>(array: T[]): T[] {
-    let currentIndex = array.length,  randomIndex;
+  private shuffle(array: number[]) {
+    let currentIndex = array.length, randomIndex;
 
     // While there remain elements to shuffle.
     while (currentIndex != 0) {
-  
+
       // Pick a remaining element.
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex--;
-  
+
       // And swap it with the current element.
       [array[currentIndex], array[randomIndex]] = [
         array[randomIndex], array[currentIndex]];
     }
-  
+
     return array;
-};
+  }
+
+
 
 
 
