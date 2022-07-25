@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { PokeCharacteristicResponse } from 'src/app/interface/pokeCharacteristicResponse';
 import { PokemonResponse } from 'src/app/interface/pokemonResponse';
+import { LocalService } from 'src/app/services/local.service';
 import { PokeapiService } from 'src/app/services/pokeapi.service';
 import { Pokelist } from '../../interface/pokemonList';
+
+
 
 @Component({
   selector: 'app-card-table',
@@ -12,18 +17,46 @@ import { Pokelist } from '../../interface/pokemonList';
 export class CardTableComponent implements OnInit {
 
 
-
-  pokemonList: any = [];
+  pokemonList: Pokelist[] = [];
   numerList: number[] = [];
+  loading: boolean = true;
 
-  constructor(private pokeService: PokeapiService) {
-    this.getPokeList();
+  timeSpend: any = this.pokeService.timeLapsed;
+
+
+  constructor(
+    private pokeService: PokeapiService,
+    private router: Router,
+    private localstorage: LocalService) {
+
+    // console.log('card table component: ', this.pokeService.getOpt.value);
+    try {
+      this.getPokeList(this.pokeService.getOpt.value.dificulty);
+      console.log(this.pokemonList);
+
+      // this.localstorage.saveData('id', '123456');
+
+      // for (let i = 0; i < this.pokemonList.length; i++) {
+      //   const e = this.pokemonList[i];
+
+      // }
+      this.loading = false;
+    } catch (e) {
+      this.router.navigate(['/']);
+    }
 
   }
 
-  getPokeList() {
 
-    const cant = this.generateArrNumber(5);
+
+  ngOnInit(): void {
+  }
+
+
+
+  getPokeList(cardNumber: number) {
+
+    const cant = this.generateArrNumber(cardNumber);
 
     // console.log('=== GetPokeList Arr Number ====');
 
@@ -32,12 +65,12 @@ export class CardTableComponent implements OnInit {
 
     for (let i = 0; i < cant.length; i++) {
       const rand = cant[i];
-    
+
       let info = this.getServicePokeInfo(rand);
 
       this.pokemonList.push(info);
 
-      
+
     }
 
 
@@ -99,7 +132,31 @@ export class CardTableComponent implements OnInit {
   }
 
   private getServicePokeInfo(id: number) {
-    
+
+    const pokeTypes = [
+      {
+        "name": "bug",
+        "newName": "grass"
+      },
+      {
+        "name": "ghost",
+        "newName": "ground"
+      },
+      {
+        "name": "rock",
+        "newName": "steel"
+      },
+      {
+        "name": "poison",
+        "newName": "fairy"
+      },
+      {
+        "name": "ice",
+        "newName": "water"
+      },
+
+    ]
+
     let pokeData = {} as Pokelist;
     // const desc = this.getServicePokeChar(id);
 
@@ -108,27 +165,44 @@ export class CardTableComponent implements OnInit {
         next(data: PokemonResponse) {
           // console.log('id:', data.id);
           const img = data.sprites.other?.['official-artwork'].front_default;
+          let pokeName = data.types[0].type.name;
+          for (let i = 0; i < pokeTypes.length; i++) {
+            const e = pokeTypes[i];
+            if (e.name === data.types[0].type.name) {
+              console.log(e);
+              pokeName = e.newName;
+            }
+
+            // data.types[0].type.name 
+          }
+
+          // console.log(data.types[0].type.name);
+
+          // console.log(pokeName);
+
 
           // console.log('========', data.types[0].type.name, '=======');
 
           pokeData.id = data.id.toString();
           pokeData.name = data.name;
           pokeData.img = (img === undefined) ? "no image" : data.sprites.other?.['official-artwork'].front_default;
-          pokeData.type = data.types[0].type.name;
+          pokeData.type = pokeName;
           // pokeData.desc = desc;
           pokeData.isSelected = false;
+
+
         },
         error(err) {
           console.log(err);
         },
         complete() {
 
-          console.log('getPoke Completado');
+          // console.log('getPoke Completado');
 
         },
       })
-
-      return pokeData;
+    
+    return pokeData;
 
   }
 
@@ -157,7 +231,5 @@ export class CardTableComponent implements OnInit {
 
 
 
-  ngOnInit(): void {
-  }
 
 }

@@ -26,9 +26,7 @@
               focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
               placeholder:font-poke
               placeholder:text-[#0A285F]" placeholder="Ingresa tu nombre" formControlName="name" required>
-                <div  *ngIf="newGameform.get('name')?.errors?.['required']">
-                    <p class="text-red-600 ">El campo nombre debe ser completado.</p>
-                </div>
+
             </div>
 
             <div class="mb-6">
@@ -46,10 +44,10 @@
                     px-3 py-1.5" formControlName="dificulty">
 
                     <option value="" disabled selected> Elija la dificultad</option>
-                    <option value="easy">Facil</option>
-                    <option value="medium">Medio</option>
-                    <option value="hard">Dificil</option>
-                    <option value="very hard">Muy dificil</option>
+                    <option value="6">Facil</option>
+                    <option value="8">Medio</option>
+                    <option value="10">Dificil</option>
+                    <option value="12">Muy dificil</option>
 
                 </select>
 
@@ -57,7 +55,8 @@
 
 
 
-            <button class="
+            <button class="       
+            disabled:bg-slate-500 disabled:text-white disabled:border-slate-200 disabled:shadow-none   
             w-full
             px-6
             py-2.5
@@ -74,7 +73,7 @@
             active:bg-[#0075BE]active:shadow-lg
             transition
             duration-150
-            ease-in-out" >Comienza</button>
+            ease-in-out"  [disabled]="!newGameform.valid">Comienza</button>
         </form>
     </div>
 </div>

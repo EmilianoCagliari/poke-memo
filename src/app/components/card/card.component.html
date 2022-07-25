@@ -1,6 +1,6 @@
 <div *ngFor="let item of items; let i=index"
 class="w-48 h-64 p-2 bg-transparent group perspective"> 
-     <div class="relative preserve-3d w-full h-full  duration-700 cursor-pointer"
+     <div class="relative preserve-3d w-full h-full  duration-700 "
      (click)="selected(i)"
      [ngClass]="{
          'my-rotate-y-180': item.isSelected
@@ -20,8 +20,8 @@ class="w-48 h-64 p-2 bg-transparent group perspective">
                     </div>
                     
                 </div>
-                <div class="absolute bottom-9 left-4 w-36 h-20 text-[0.6rem] pt-2 font-semibold">
-                    <p>{{ item.desc }} - Index {{i}}</p>
+                <div class="absolute bottom-9 left-4 w-36 h-20 text-[0.6rem] pt-2 font-semibold text-center">
+                    <p>{{ item.name | titlecase}}</p>
                 </div>
             </div>
         </div>

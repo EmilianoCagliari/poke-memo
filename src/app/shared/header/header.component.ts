@@ -13,7 +13,7 @@ export class HeaderComponent implements OnInit {
 
   constructor( private router: Router ) { 
     // this.path = this.router.config;
-    console.log(this.router.config);
+    // console.log(this.router.config);
    
 
   }

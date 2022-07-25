@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { PokeapiService } from '../../services/pokeapi.service';
 
 @Component({
   selector: 'app-card',
@@ -8,24 +9,32 @@ import { Component, Input, OnInit } from '@angular/core';
 export class CardComponent implements OnInit {
 
 
-  
+  startGame: boolean = false;
+  cardMatch = [];
+
   @Input() items: any = [];
 
-  constructor() { }
+  constructor( private pokeService: PokeapiService) { }
 
 
-  selected(i: number) {
-    // console.log('Array Items:', this.items);
+  selected(i: number) {  
+    console.log(this.startGame);
     
-    // console.log('INDEX:', i);
-    // console.log('This.items:', this.items[i]);
-    
-    
+    if(!this.startGame) {
+      this.pokeService.startTimer();
+      this.startGame = true;
+    }
     this.items[i].isSelected = !this.items[i].isSelected ;
-    // console.log('Index boolean:', i, this.items[i].isSelected);    
+    
   }
 
   ngOnInit(): void {
   }
+
+
+  isMatch() {
+
+  }
+
 
 }

@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import { PokeapiService } from '../services/pokeapi.service';
 
 @Component({
   selector: 'app-new',
@@ -13,9 +15,11 @@ export class NewComponent implements OnInit {
 
   setValue() {
     console.log(this.newGameform.value);
+    this.pokeService.setOpt(this.newGameform);
+    this.router.navigate(['game']);
   }
 
-  constructor() { 
+  constructor( private router:Router, private pokeService: PokeapiService) { 
 
   }
 
