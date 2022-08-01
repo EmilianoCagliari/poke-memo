@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { PokemonResponse } from '../interface/pokemonResponse';
 import { PokeCharacteristicResponse } from '../interface/pokeCharacteristicResponse';
 import { FormGroup } from '@angular/forms';
-import { timer } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,27 +10,9 @@ import { timer } from 'rxjs';
 
 export class PokeapiService {
 
-  timer = timer(1000, 1000);
-  private _timeLapsed: number = 0;
-  private _startGame: boolean = false;
-
   private _opt:any = [];
 
 
-
-  startTimer() {
-    this.timer.subscribe((val) => {
-      if(this._startGame) {
-        this._timeLapsed++;
-        console.log(this._timeLapsed)
-      }
-    });
-  }
-
-
-  get timeLapsed() {
-    return this._timeLapsed;
-  }
 
   get getOpt() {
     return this._opt;

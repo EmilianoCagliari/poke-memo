@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { timer } from 'rxjs';
 import { PokeCharacteristicResponse } from 'src/app/interface/pokeCharacteristicResponse';
 import { PokemonResponse } from 'src/app/interface/pokemonResponse';
 import { LocalService } from 'src/app/services/local.service';
@@ -21,7 +21,19 @@ export class CardTableComponent implements OnInit {
   numerList: number[] = [];
   loading: boolean = true;
 
-  timeSpend: any = this.pokeService.timeLapsed;
+  _startGame: boolean = true;
+  _timeLapsed: any;
+  timeSpend: number = 0;
+
+  timer = timer(1000, 1000);
+
+  startTimer() {
+    this.timer.subscribe((val) => {
+      if(this._startGame) {
+        this.timeSpend++;
+      }
+    });
+  }
 
 
   constructor(
