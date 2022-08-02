@@ -43,8 +43,13 @@ export class CardTableComponent implements OnInit {
 
     // console.log('card table component: ', this.pokeService.getOpt.value);
     try {
+      this.localstorage.clearData();
       this.getPokeList(this.pokeService.getOpt.value.dificulty);
-      console.log(this.pokemonList);
+      
+      
+      
+
+
 
       // this.localstorage.saveData('id', '123456');
 
@@ -54,7 +59,7 @@ export class CardTableComponent implements OnInit {
       // }
       this.loading = false;
     } catch (e) {
-      this.router.navigate(['/']);
+      // this.router.navigate(['/']);
     }
 
   }
@@ -74,6 +79,7 @@ export class CardTableComponent implements OnInit {
 
     // console.log(cant);
 
+    this.localstorage.clearData();
 
     for (let i = 0; i < cant.length; i++) {
       const rand = cant[i];
@@ -81,7 +87,21 @@ export class CardTableComponent implements OnInit {
       let info = this.getServicePokeInfo(rand);
 
       this.pokemonList.push(info);
+      
+      if ( i == 1) {
+      
+      console.log('Info = 1', info);
+      
+        let testObject = {'id': 115, 'url': 'https://www.google.com', 'isSelected': true };
+        // console.log(typeof testObject);
+        this.localstorage.saveData(`${i}`, JSON.stringify(info));
 
+        let retrievedObject: any = JSON.parse( localStorage.getItem('1')! );
+        console.log('retrievedObject: ', retrievedObject);
+        
+      }
+      
+      // this.localstorage.saveData(`${i}`, JSON.stringify(info));
 
     }
 
@@ -181,7 +201,7 @@ export class CardTableComponent implements OnInit {
           for (let i = 0; i < pokeTypes.length; i++) {
             const e = pokeTypes[i];
             if (e.name === data.types[0].type.name) {
-              console.log(e);
+              // console.log(e);
               pokeName = e.newName;
             }
 
