@@ -14,7 +14,7 @@ export class NewComponent implements OnInit {
 
 
   setValue() {
-    console.log(this.newGameform.value);
+    // console.log(this.newGameform.value);
     this.pokeService.setOpt(this.newGameform);
     this.router.navigate(['game']);
   }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { timer } from 'rxjs';
+import { forkJoin, Observable, timer } from 'rxjs';
 import { PokeCharacteristicResponse } from 'src/app/interface/pokeCharacteristicResponse';
 import { PokemonResponse } from 'src/app/interface/pokemonResponse';
 import { LocalService } from 'src/app/services/local.service';
@@ -21,6 +21,30 @@ export class CardTableComponent implements OnInit {
   numerList: number[] = [];
   loading: boolean = true;
 
+  pokeTypes = [
+    {
+      "name": "bug",
+      "newName": "grass"
+    },
+    {
+      "name": "ghost",
+      "newName": "ground"
+    },
+    {
+      "name": "rock",
+      "newName": "steel"
+    },
+    {
+      "name": "poison",
+      "newName": "fairy"
+    },
+    {
+      "name": "ice",
+      "newName": "water"
+    },
+
+  ]
+
   _startGame: boolean = true;
   _timeLapsed: any;
   timeSpend: number = 0;
@@ -29,7 +53,7 @@ export class CardTableComponent implements OnInit {
 
   startTimer() {
     this.timer.subscribe((val) => {
-      if(this._startGame) {
+      if (this._startGame) {
         this.timeSpend++;
       }
     });
@@ -43,11 +67,27 @@ export class CardTableComponent implements OnInit {
 
     // console.log('card table component: ', this.pokeService.getOpt.value);
     try {
-      this.localstorage.clearData();
-      this.getPokeList(this.pokeService.getOpt.value.dificulty);
+      // this.localstorage.clearData();
+      const pkList:any =  JSON.parse(this.localstorage.getData('pokemonList')! );
+      if( pkList ) {
+        this.pokemonList = pkList;
+        console.log('LocalStorage');
+        
+      } else {
+        this.getPokeList(this.pokeService.getOpt.value.dificulty);
+        console.log('PokeService');
+      }
+       
+
+
       
-      
-      
+      // this.pokemonList.map( (v, i) => {
+
+      //   let json = JSON.stringify(v);
+      //   console.log(`Data ${v} y jsondata ${json}`);
+
+
+      // });
 
 
 
@@ -72,6 +112,7 @@ export class CardTableComponent implements OnInit {
 
 
   getPokeList(cardNumber: number) {
+    this.localstorage.clearData();
 
     const cant = this.generateArrNumber(cardNumber);
 
@@ -81,29 +122,98 @@ export class CardTableComponent implements OnInit {
 
     this.localstorage.clearData();
 
+    const cartObserver: Observable<PokemonResponse>[] = [];
+
+
+
     for (let i = 0; i < cant.length; i++) {
       const rand = cant[i];
 
-      let info = this.getServicePokeInfo(rand);
+      // const obj = this.getServicePokeInfo(rand);
 
-      this.pokemonList.push(info);
-      
-      if ( i == 1) {
-      
-      console.log('Info = 1', info);
-      
-        let testObject = {'id': 115, 'url': 'https://www.google.com', 'isSelected': true };
-        // console.log(typeof testObject);
-        this.localstorage.saveData(`${i}`, JSON.stringify(info));
+      console.log('TOKEN');
 
-        let retrievedObject: any = JSON.parse( localStorage.getItem('1')! );
-        console.log('retrievedObject: ', retrievedObject);
-        
-      }
-      
-      // this.localstorage.saveData(`${i}`, JSON.stringify(info));
+      cartObserver.push(this.pokeService.getPoke(`${rand}`));
 
+
+      // if (i == 1) {
+      //   console.log('obj', obj);
+      //   localStorage.setItem('obj', JSON.stringify(obj));
+
+      // }
+
+      // this.pokemonList.push(obj);
     }
+
+    forkJoin(cartObserver).subscribe({
+      next: (data) => {        
+        for (let i = 0; i < data.length; i++) {
+
+          let pokeData = <Pokelist>{};
+          
+          const e = data[i];
+
+          const img = e.sprites.other?.['official-artwork'].front_default;
+          let pokeName = e.types[0].type.name;
+          for (let i = 0; i < this.pokeTypes.length; i++) {
+            const p = this.pokeTypes[i];
+            if (p.name === e.types[0].type.name) {
+              // console.log(e);
+              pokeName = p.newName;
+            }
+
+            // e.types[0].type.name 
+          }
+
+          // console.log(e.types[0].type.name);
+
+          // console.log(pokeName);
+
+
+          // console.log('========', e.types[0].type.name, '=======');
+
+          pokeData.id = e.id.toString();
+          pokeData.name = e.name;
+          pokeData.img = (img === undefined) ? "no image" : e.sprites.other?.['official-artwork'].front_default;
+          pokeData.type = pokeName;
+          // pokeData.desc = desc;
+          pokeData.isSelected = true;
+
+
+          this.pokemonList.push(pokeData);
+
+          if (i == data.length - 1) {
+            this.localstorage.saveData('pokemonList', JSON.stringify(this.pokemonList));
+          }
+        }
+      },
+
+
+    });
+
+
+    // console.log(this.pokemonList);
+
+
+
+    // console.log('info:', JSON.stringify(info) );
+    // this.localstorage.saveData('list', JSON.stringify(info));
+
+
+
+    // let testObject = {'id': 115, 'url': 'https://www.google.com', 'isSelected': true };
+    // console.log(typeof testObject);
+    // this.localstorage.saveData(`${i}`, JSON.stringify(info) );
+
+    // let retrievedObject: any = JSON.parse( localStorage.getItem('1')! );
+    // console.log('retrievedObject: ', retrievedObject);
+
+    // console.log('Pokemon List:', this.pokemonList);
+
+    // this.localstorage.saveData('list', JSON.stringify(this.pokemonList));
+
+    // let retrievedObject: any = JSON.parse(localStorage.getItem('list')!);
+    // console.log('retrievedObject: ', retrievedObject);
 
 
     // console.log('=============', 'ARRAY', '=============');
@@ -123,7 +233,7 @@ export class CardTableComponent implements OnInit {
       if (!arrResp.includes(rand)) {
         arrResp.push(rand, rand);
       } else {
-        console.log('Valor Repetido');
+        // console.log('Valor Repetido');
         i--;
       }
 
@@ -153,10 +263,10 @@ export class CardTableComponent implements OnInit {
           }
         },
         error(err) {
-          console.log(err);
+          // console.log(err);
         },
         complete() {
-          console.log('getPokeCharacteristic Completado');
+          // console.log('getPokeCharacteristic Completado');
         },
       });
 
@@ -189,13 +299,15 @@ export class CardTableComponent implements OnInit {
 
     ]
 
-    let pokeData = {} as Pokelist;
+    let pokeData = <Pokelist>{};
     // const desc = this.getServicePokeChar(id);
+
 
     this.pokeService.getPoke(`${id}`)
       .subscribe({
         next(data: PokemonResponse) {
-          // console.log('id:', data.id);
+          // console.log('DATA');
+
           const img = data.sprites.other?.['official-artwork'].front_default;
           let pokeName = data.types[0].type.name;
           for (let i = 0; i < pokeTypes.length; i++) {
@@ -223,9 +335,10 @@ export class CardTableComponent implements OnInit {
           pokeData.isSelected = false;
 
 
+
         },
         error(err) {
-          console.log(err);
+          // console.log(err);
         },
         complete() {
 
@@ -233,7 +346,7 @@ export class CardTableComponent implements OnInit {
 
         },
       })
-    
+
     return pokeData;
 
   }

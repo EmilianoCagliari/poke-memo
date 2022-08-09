@@ -1,26 +1,38 @@
 <div *ngFor="let item of items; let i=index"
-class="w-48 h-64 p-2 bg-transparent group perspective"> 
+class="
+md:w-48 md:h-64 
+sm:w-32 sm:h-52 
+p-2 bg-transparent group perspective"> 
      <div class="relative preserve-3d w-full h-full  duration-700 "
      (click)="selected(i)"
      [ngClass]="{
          'my-rotate-y-180': item.isSelected
      }"> <!-- group-hover:my-rotate-y-180 -->
-        <div class="absolute backface-hidden w-full h-full">
-            <img src="../../../assets/Back - Card.png" class="w-full h-full" alt="" srcset="">
+        <div class="absolute backface-hidden w-full ">
+            <img src="../../../assets/Back - Card.png" class="w-full " alt="" srcset="">
         </div>
-        <div class="absolute my-rotate-y-180 backface-hidden w-full h-full ">
+        <div class="absolute my-rotate-y-180 backface-hidden w-full ">
             <div>
                 <img src="../../../assets/Basic - {{ item.type | titlecase }}.png" class="w-full h-full" alt="" srcset="">
-                <div class="absolute top-2 left-10 w-20 h-3 font-bold text-[0.6rem]">
+                <div class="
+                md:top-2 md:left-10 md:w-20 md:h-3 md:text-[0.6rem]
+                sm:top-1 sm:left-7 dm:w-15 sm:h-2 sm:text-[0.5rem]
+                absolute font-bold ">
                     <p> {{item.id | number}}-{{ item.name | titlecase }} </p>
                 </div>
-                <div class="absolute flex justify-center items-center top-[1.6rem] left-4  w-36 h-24 bg-gradient-to-r from-[#AE8625] via-[#F7EF8A] to-[#D2AC47]">
+                <div class="
+                md:left-4 md:top-[1.6rem] md:w-36 md:h-24  
+                sm:left-2 sm:top-[1rem] sm:w-24 sm:h-16  
+                absolute flex justify-center items-center  bg-gradient-to-r from-[#AE8625] via-[#F7EF8A] to-[#D2AC47]">
                     <div class=" absolute h-[92%] w-[93%] flex justify-center items-center  bg-white">
                         <img src="{{ item.img }}" alt="" class="h-full">
                     </div>
                     
                 </div>
-                <div class="absolute bottom-9 left-4 w-36 h-20 text-[0.6rem] pt-2 font-semibold text-center">
+                <div class="
+                md:bottom-9 md:left-4 md:w-36 md:h-20 md:text-[0.6rem]
+                sm:bottom-7 sm:left-2 sm:w-24 sm:h-12 sm:text-[0.5rem]
+                absolute pt-2 font-semibold text-center ">
                     <p>{{ item.name | titlecase}}</p>
                 </div>
             </div>
